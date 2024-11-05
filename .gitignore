@@ -1,1 +1,9 @@
 venv_gnomon/
+
+__pycache__/
+*.pyc
+
+
+dist/
+build/
+*.egg-info/
