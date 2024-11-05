@@ -5,7 +5,7 @@ import pprint as pp
 # from opendata_periplous.guides import extraction
 from gnomon import file_utilities
 # from opendata_periplous.db import csvtable, csvfile
-from opendata_periplous.utils.text_utils import normalize_whitespace
+from gnomon.utils import normalize_whitespace
 # import logging
 # logging.basicConfig()
 import numpy as np
@@ -23,32 +23,23 @@ class ColumnAligner():
         # print(f'base_matcher.ColumnAligner.__init__>{self.alignment_policy=}')
         
     def align_df(self,
-                 source_data_df:DataFrame,
-                 source_header_df:DataFrame,
+                 source_df:DataFrame,
                  target_df: DataFrame,
-                 source_name:str = "source"):       
-        # print(f'base_matcher.ColumnAligner.align_df>source_header_df=\n{source_header_df}')
-        # print(f'align_df>target_df={target_df}')
-        
-        source_headers = file_utilities.dict_table_headers(source_data_df, source_header_df)  
+                 source_name:str = "source"): 
+        source_headers = {i:h for i,h in enumerate(source_df.columns)}
         if source_name == "source":
-            source_name+=":"+'__'.join(source_data_df.columns)
-            
-        # print(f'Align source_name:{source_name}')   
-        # print(f'source_data_df=\n{source_data_df}') 
-        # print(f'source_header_df=\n{source_header_df}')
-        if len(source_data_df.columns)>0:
+            source_name+=":"+'__'.join(range(0,source_df.shape[1]))
+        
+        if len(source_df.columns)>0:
             start = time.time()
             alignment_matrix = self.schema_matcher.get_matches(
                 source_name, 
-                source_data_df, 
-                source_header_df, 
+                source_df, 
                 target_df
             )
             end = time.time()
             matching_time = end - start
             
-            # print(f'base_matcher.ColumnAligner.align_df > alignment_matrix=\n\n{alignment_matrix}')
             start = time.time()
             column_alignments = resolve_alignment(
                 alignment_matrix, 
@@ -63,31 +54,16 @@ class ColumnAligner():
         # print(alignment_matrix)
         return column_alignments, alignment_matrix, source_headers, matching_time, alignment_time
     
-    def align_table(self, csv_table:csvtable.CSVtable, target_df: DataFrame):
+    def align_table(self, source_df:DataFrame, target_df: DataFrame):
         """
-        Given a metadata object of a csvtable and a target schema
+        Given a source dataframe and a target schema
         align the source schema to the target schema
-        """
-        datafile = csvfile.CSVfile.get_file(csv_table.datafile_key)
-        file_df = file_utilities.get_dataframe(datafile.full_path, None)# needs changing
-        
-        # print(f'{datafile.full_path=}')
-        # target_df.to_csv('target_df.csv')
-        data_df = csv_table.load_data_df(file_df)
-        header_df = csv_table.get_header_df()
-        # print(f'header_df={header_df}')
-        if header_df.empty:
-            # print('ITS EMPTY!')
-            header_df = DataFrame([['' for i in data_df.columns]], columns= data_df.columns)
-            
-        # print(f'header_df=\n{header_df}')
-        # print(f'data_df=\n{data_df}')
+        """        
         
         column_alignments, alignment_matrix, source_headers, matching_time, alignment_time = self.align_df(
-            data_df,
-            header_df,
+            source_df,
             target_df,
-            str(csv_table.datafile_key) + "_" + str(csv_table.datatable_key)
+            str(source_df.name)
         )
         return column_alignments, alignment_matrix, source_headers, matching_time, alignment_time
                   

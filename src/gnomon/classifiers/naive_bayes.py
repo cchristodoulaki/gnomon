@@ -65,6 +65,7 @@ class NaiveBayesLearner(Pipeline):
                     }
                 }
             ):
+        print(f'Naive Bayes Learner target_features:\n{target_features}\n\n')
                 
         self.target_features = target_features
         self.meta_features = meta_features
@@ -74,9 +75,9 @@ class NaiveBayesLearner(Pipeline):
                 if source in self.meta_features.keys():
                     for feature_name in self.meta_features[source][type].keys():                                                           
                         transformer_name = f"{source.title()}_{type.title()}_{feature_name.replace('_',' ').title().replace(' ','')}"
-                        # print(f'{transformer_name=}')
+                        print(f'{transformer_name=}')
                         transformer_class = get_transformer_class(transformer_name)
-                        # print(f'transformer_class={transformer_class}')
+                        print(f'transformer_class={transformer_class}')
                         if transformer_class:
                             if type not in transformer_pipelines.keys():                                
                                 transformer_pipelines[type] = []

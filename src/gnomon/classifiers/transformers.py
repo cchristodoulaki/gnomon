@@ -85,11 +85,11 @@ class CategoricalTransformer(BaseEstimator, TransformerMixin):
             elif step == 'strip':
                 s = s.strip()
             elif step == 'split_camelCase':            
-                s = text_utils.split_camelCase(s)
+                s = utils.split_camelCase(s)
             elif step == 'remove_punctuation':
-                s = text_utils.remove_punctuation(s)
+                s = utils.remove_punctuation(s)
             elif step == 'lemmatize':
-                s = text_utils.lemmatize(s)
+                s = utils.lemmatize(s)
             elif step == 'encode':
                 token_array = s.split()
                 for i, t in enumerate(token_array):
@@ -142,85 +142,106 @@ def extract_structure_column_index(X, feature_name):
 
 def extract_values(X, feature_name):
     Xnew = X.copy()
+    
     Xnew.loc[:,'table_column'] = Xnew.loc[:,'table_column'].apply(json.loads)
     Xnew[feature_name] = Xnew.apply(lambda x: str((' ').join([str(v).strip() for v in x['table_column']['values']])).strip(), axis=1)    
+    
+    # Xnew.loc[:,'values'] = Xnew.loc[:,'values'].apply(json.loads)
+    # Xnew[feature_name] = Xnew.apply(lambda x: str((' ').join([str(v).strip() for v in x['values']])).strip(), axis=1)    
+    
     return Xnew[[feature_name]]
 
 def extract_values_max_token_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: max(len(word_tokenize(str(value))) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: max(len(word_tokenize(str(value))) for value in json.loads(x)))
+
     return Xnew[[feature_name]]  
 
 def extract_values_avg_token_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: avg(len(word_tokenize(str(value))) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: avg(len(word_tokenize(str(value))) for value in json.loads(x)))
     return Xnew[[feature_name]] 
 
 def extract_values_min_token_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: min(len(word_tokenize(str(value))) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: min(len(word_tokenize(str(value))) for value in json.loads(x)))
     return Xnew[[feature_name]] 
 
 def extract_values_max_char_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] = X['table_column'].apply(lambda x: max(len(str(value)) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] = X['values'].apply(lambda x: max(len(str(value)) for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 def extract_values_avg_char_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] = X['table_column'].apply(lambda x: avg(len(str(value)) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] = X['values'].apply(lambda x: avg(len(str(value)) for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 def extract_values_min_char_count(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] = X['table_column'].apply(lambda x: min(len(str(value)) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] = X['values'].apply(lambda x: min(len(str(value)) for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 
 def extract_values_all_url(X, feature_name):        
     Xnew = X.copy()
     Xnew.loc[:, feature_name] =  X['table_column'].apply(lambda x: all(is_valid_url(str(value).strip()) for value in json.loads(x)['values']))
+    # Xnew.loc[:, feature_name] =  X['values'].apply(lambda x: all(is_valid_url(str(value).strip()) for value in json.loads(x)))
     return Xnew[[ feature_name]]  
   
 def extract_values_any_url(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: any(is_valid_url(str(value).strip()) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: any(is_valid_url(str(value).strip()) for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 def extract_values_all_has_underscore(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: all('_' in str(value).strip() for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: all('_' in str(value).strip() for value in json.loads(x)))
     return Xnew[[feature_name]]    
 
 def extract_values_any_has_underscore(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: any('_' in str(value).strip() for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: any('_' in str(value).strip() for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 def extract_values_all_unique(X,feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: len(json.loads(x)['values'])==len(set(json.loads(x)['values'])))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: len(json.loads(x))==len(set(json.loads(x))))
     return Xnew[[feature_name]]
 
 def extract_values_any_empty(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: any(is_empty(value) for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: any(is_empty(value) for value in json.loads(x)))
     return Xnew[[feature_name]]
 
 def extract_values_all_lower(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: all(str(value).islower() for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: all(str(value).islower() for value in json.loads(x)))
     return Xnew[[feature_name]]    
     
 def extract_values_all_upper(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: all(str(value).isupper() for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: all(str(value).isupper() for value in json.loads(x)))
     return Xnew[[feature_name]]
             
     
 def extract_values_all_title(X, feature_name):
     Xnew = X.copy()
     Xnew.loc[:,feature_name] =  X['table_column'].apply(lambda x: all(str(value).istitle() for value in json.loads(x)['values']))
+    # Xnew.loc[:,feature_name] =  X['values'].apply(lambda x: all(str(value).istitle() for value in json.loads(x)))
     return Xnew[[feature_name]] 
 
 def extract_header(X, feature_name):
