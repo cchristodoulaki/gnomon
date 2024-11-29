@@ -8,5 +8,5 @@ setup(
     author='Christina Christodoulakis',
     author_email='christina@cs.toronto.edu',
     url='https://github.com/cchristodoulaki/gnomon',
-    python_requires='==3.12'
+    python_requires='>=3.12'
 )
