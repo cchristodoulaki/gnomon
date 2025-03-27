@@ -66,7 +66,7 @@ class NaiveBayesLearner(Pipeline):
                 }
             ):
         print(f'Naive Bayes Learner target_features:\n{target_features}\n\n')
-                
+        self.model = 'naive_bayes'        
         self.target_features = target_features
         self.meta_features = meta_features
         transformer_pipelines = {}     

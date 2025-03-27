@@ -2,13 +2,16 @@
 import string
 import re
 import spacy
+import spacy.cli
+
+
 from nltk import download
 
 print('\nloading en_core_web_sm ...')
 try:
     sp = spacy.load('en_core_web_sm')
 except OSError:
-  download(model="en_core_web_sm")
+  spacy.cli.download("en_core_web_sm")
   sp = spacy.load("en_core_web_sm")
 print('en_core_web_sm loaded!')
 

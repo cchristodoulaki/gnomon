@@ -265,7 +265,6 @@ def resolve_alignment(original_df, source_headers, matcher_measure, alignment_po
 
 class ColumnMatching(TypedDict):
     field: int
-    lang: str
     csv_column: int
     extracted_name: str   
 
@@ -279,7 +278,7 @@ class AutoColumnMatching(ColumnMatching):
 class BaseMatcher(ABC):
 
     @abstractmethod
-    def get_matches(self, source_name:str, data_df: DataFrame , header_df: DataFrame, target_data:DataFrame, target_schema) -> Dict[int, AutoColumnMatching]:
+    def get_matches(self, source_df: DataFrame, target_df:DataFrame) -> Dict[int, AutoColumnMatching]:
         """
         Get the column matches from a schema matching algorithm
         :returns List of matches
